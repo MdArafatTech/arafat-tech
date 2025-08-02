@@ -5,3 +5,97 @@
 /* *{
   background-color: rgb(255, 255, 255);
 } */
+
+.thunderstorm-button {
+  position: relative;
+  background: #1e293b; /* dark stormy blue */
+  color: white;
+  border-radius: 12px;
+  padding: 14px 28px;
+  font-weight: 700;
+  cursor: pointer;
+  overflow: visible;
+  transition: background-color 0.4s ease;
+  box-shadow:
+    0 0 8px 2px rgba(147, 197, 253, 0.5),
+    0 0 20px 6px rgba(147, 197, 253, 0.2);
+  user-select: none;
+
+  /* Continuous gentle jitter for thunder vibration */
+  animation: thunder-jitter 1.2s ease-in-out infinite alternate;
+}
+
+.thunderstorm-button:hover {
+  background-color: #ffffff;
+  color: #1e293b;
+  box-shadow:
+    0 0 15px 4px rgba(147, 197, 253, 0.8),
+    0 0 30px 12px rgba(191, 219, 254, 0.6),
+    0 0 45px 20px rgba(96, 165, 250, 0.8);
+}
+
+.thunderstorm-button::before {
+  content: '';
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  width: 120px;
+  height: 50px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #e0f2fe 25%,
+    #bae6fd 50%,
+    #e0f2fe 75%,
+    transparent
+  );
+  filter: blur(14px);
+  opacity: 0.5;
+  transform: translateX(-50%);
+  animation: lightning-flash 4s ease-in-out infinite;
+  pointer-events: none;
+  border-radius: 25px;
+  z-index: -1;
+}
+
+/* Lightning flicker effect - smooth fade in/out with slight blur scale */
+@keyframes lightning-flash {
+  0%, 75%, 100% {
+    opacity: 0;
+    filter: blur(14px) brightness(0.9);
+  }
+  80%, 90% {
+    opacity: 0.6;
+    filter: blur(10px) brightness(1.3);
+  }
+  85% {
+    opacity: 1;
+    filter: blur(6px) brightness(1.5);
+  }
+}
+
+/* Smooth, subtle jitter animation */
+@keyframes thunder-jitter {
+  0% {
+    transform: translate(0, 0);
+    box-shadow:
+      0 0 10px 3px rgba(147, 197, 253, 0.5),
+      0 0 25px 7px rgba(191, 219, 254, 0.4),
+      0 0 40px 14px rgba(96, 165, 250, 0.3);
+  }
+  50% {
+    transform: translate(1.5px, -1px);
+    box-shadow:
+      0 0 16px 5px rgba(147, 197, 253, 0.75),
+      0 0 35px 10px rgba(191, 219, 254, 0.55),
+      0 0 50px 20px rgba(96, 165, 250, 0.5);
+  }
+  100% {
+    transform: translate(-1.5px, 1px);
+    box-shadow:
+      0 0 13px 4px rgba(147, 197, 253, 0.65),
+      0 0 30px 9px rgba(191, 219, 254, 0.45),
+      0 0 45px 18px rgba(96, 165, 250, 0.45);
+  }
+}
+

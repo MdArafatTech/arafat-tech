@@ -2,12 +2,31 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import heroImg from "../assets/logo.png"; // Replace with your own image
+import { Links } from "react-router";
+
+const FireButton = ({ to, label }) => (
+  <motion.div
+    whileHover={{ scale: 1.1 }}
+    animate={{
+      y: [0, -2, 0],
+    }}
+    transition={{ repeat: Infinity, duration: 1.5 }}
+    className="relative"
+  >
+    <Link
+      to={to}
+      className="fire-button relative inline-block px-6 py-3 bg-orange-600 text-white rounded-xl font-bold shadow-lg transition-all hover:bg-orange-500"
+    >
+      {label}
+    </Link>
+  </motion.div>
+);
 
 const HomePage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-yellow-50 to-white text-gray-800">
       {/* Hero Section */}
-      <section className="flex flex-col-reverse lg:flex-row items-center justify-between px-6 lg:px-24 py-16 gap-10">
+      <section className="flex flex-col-reverse lg:flex-row items-center justify-between px-6 lg:px-24 py-20 gap-10">
         <motion.div
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
@@ -23,13 +42,16 @@ const HomePage = () => {
             enterprise-grade services.
           </p>
           <p className="text-lg mb-6 leading-relaxed">Our Services</p>
-          <div>
-          <Link
-            to="/aboutus"
-            className="inline-block bg-orange-500 text-white px-6 py-3 rounded-xl shadow hover:bg-orange-600 transition"
-          >
-             About Us
-          </Link>
+
+          <div className="grid lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-1 gap-20 items-center justify-center">
+
+<Link to="/contact"><button className="thunderstorm-button">Identity</button></Link>
+<Link to="/aboutus"><button className="thunderstorm-button ">Billing</button></Link>
+            
+
+
+
+
 
           </div>
         </motion.div>

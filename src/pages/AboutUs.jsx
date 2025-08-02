@@ -22,7 +22,7 @@ const Billing = () => {
   const handleItemChange = (index, field, value) => {
     const newItems = [...items];
     if (field === "qty")
-      newItems[index][field] = Math.max(1, parseInt(value) || 1);
+      newItems[index][field] = Math.max(0, parseInt(value) || 0);
     else if (field === "discount")
       newItems[index][field] = Math.min(
         100,
@@ -62,6 +62,7 @@ const Billing = () => {
     const pageWidth = pdf.internal.pageSize.getWidth();
     const margin = 10;
     const centerX = pageWidth / 2;
+    const pageHeight = pdf.internal.pageSize.getHeight(); // ✅ Add this
 
     pdf.setFontSize(18);
     pdf.setTextColor("#ea580c");
@@ -192,6 +193,13 @@ pdf.text("Authorized Signature", pageWidth - 80, y);
 
 pdf.line(20, y + 2, 70, y + 2); // customer signature line
 pdf.line(pageWidth - 80, y + 2, pageWidth - 20, y + 2); // authorized signature line
+ 
+
+  // Footer: Powered by
+  pdf.setFontSize(10);
+  pdf.setTextColor("#666");
+  pdf.setFont(undefined, "italic");
+  pdf.text("Powered by Arafat-Tech", pageWidth / 2, pageHeight - 10, { align: "center" });
 
     pdf.save(`${invoiceNo}_receipt.pdf`);
 
@@ -218,7 +226,7 @@ pdf.line(pageWidth - 80, y + 2, pageWidth - 20, y + 2); // authorized signature 
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        padding: 16,
+        padding:20,
         fontFamily: "Arial, sans-serif",
         
       }}
@@ -346,19 +354,21 @@ pdf.line(pageWidth - 80, y + 2, pageWidth - 20, y + 2); // authorized signature 
                 fontSize: 16,
               }}
             />
-            <input
-              type="number"
-              placeholder="Qty"
-              value=""
-              onChange={(e) => handleItemChange(index, "qty", e.target.value)}
-              style={{
-                flex: "1 1 15%",
-                padding: 10,
-                borderRadius: 12,
-                border: "1px solid #ccc",
-                fontSize: 16,
-              }}
-            />
+  <input
+  type="number"
+  placeholder="Qty"
+  value={item.qty === 0 ? "" : item.qty} // show placeholder if 0
+  onChange={(e) => handleItemChange(index, "qty", e.target.value)}
+  style={{
+    flex: "1 1 15%",
+    padding: 10,
+    borderRadius: 12,
+    border: "1px solid #ccc",
+    fontSize: 16,
+  }}
+/>
+
+
 
             <input
               type="number"

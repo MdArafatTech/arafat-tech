@@ -6,6 +6,7 @@ import HomePage from '../pages/HomePage';
 import AboutUs from '../pages/AboutUs';
 import Contact from '../pages/Contact';
 
+
 const Routes = createBrowserRouter (
     [
         {
@@ -25,6 +26,7 @@ const Routes = createBrowserRouter (
                     path:"/contact",
                     element:<Contact></Contact>
                 },
+               
             ]
         }
     ]

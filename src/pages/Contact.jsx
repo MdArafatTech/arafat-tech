@@ -25,7 +25,6 @@ const IdentityForm = () => {
   });
 
   const [imageFile, setImageFile] = useState(null);
-  const [darkMode, setDarkMode] = useState(false);
   const [preview, setPreview] = useState(false);
   const [qrDataURL, setQrDataURL] = useState("");
 
@@ -43,7 +42,7 @@ const IdentityForm = () => {
 
   const generatePDF = async () => {
     const doc = new jsPDF({
-      unit: "pt", // using points for better control
+      unit: "pt",
       format: "a4",
     });
 
@@ -56,42 +55,46 @@ const IdentityForm = () => {
     doc.setFillColor(255, 249, 195);
     doc.rect(0, 0, pageWidth, pageHeight, "F");
 
-    // Title
+    // QR Code top-left
+    const qrSize = 80;
+    if (qrDataURL) {
+      doc.addImage(qrDataURL, "PNG", margin, margin, qrSize, qrSize);
+    }
+
+    // Title center
     doc.setFontSize(22);
     doc.setTextColor("#92400e");
     doc.setFont(undefined, "bold");
-    doc.text("Idendity Form", pageWidth / 2, y, { align: "center" });
-    y += 30;
+    doc.text("Identity Form", pageWidth / 2, margin + 10, { align: "center" });
 
-    // Subtitle
     doc.setFontSize(12);
     doc.setTextColor("#444");
     doc.setFont(undefined, "normal");
-    doc.text("ARAFAT-TECH LTD", pageWidth / 2, y, { align: "center" });
-    y += 30;
+    doc.text("ARAFAT-TECH LTD", pageWidth / 2, margin + 32, { align: "center" });
 
-    // Draw horizontal line
+    y = margin + 60;
+
+    // Horizontal line below title
     doc.setDrawColor(150);
     doc.setLineWidth(1);
     doc.line(margin, y, pageWidth - margin, y);
     y += 25;
 
     // Section header helper
-const sectionHeader = (title) => {
-  y += 20; // Add top margin before the section
-  doc.setFontSize(16);
-  doc.setTextColor("#ea580c");
-  doc.setFont(undefined, "bold");
-  doc.text(title, margin, y);
-  y += 8;
-  doc.setDrawColor(220);
-  doc.setLineWidth(0.7);
-  doc.line(margin, y, pageWidth - margin, y); // underline
-  y += 12;
-};
+    const sectionHeader = (title) => {
+      y += 20;
+      doc.setFontSize(16);
+      doc.setTextColor("#ea580c");
+      doc.setFont(undefined, "bold");
+      doc.text(title, margin, y);
+      y += 8;
+      doc.setDrawColor(220);
+      doc.setLineWidth(0.7);
+      doc.line(margin, y, pageWidth - margin, y);
+      y += 12;
+    };
 
-
-    // Draw a label-value row box, auto-adjust height for multi-line
+    // Draw a label-value row box with auto-height
     const drawRow = (label, value) => {
       const labelWidth = 90;
       const rowWidth = pageWidth - margin * 2;
@@ -99,22 +102,16 @@ const sectionHeader = (title) => {
       const fontSize = 11;
       doc.setFontSize(fontSize);
 
-      // Split text to fit max width
       const lines = doc.splitTextToSize(value || "-", maxValueWidth);
-
-      // Row height: 16 per line + padding
       const rowHeight = Math.max(lines.length * 16, 20);
 
-      // Draw rectangle box
       doc.setDrawColor(180);
       doc.rect(margin, y, rowWidth, rowHeight);
 
-      // Label (bold)
       doc.setFont(undefined, "bold");
       doc.setTextColor("#444");
       doc.text(label + ":", margin + 8, y + 14);
 
-      // Value (normal)
       doc.setFont(undefined, "normal");
       doc.setTextColor("#000");
       doc.text(lines, margin + labelWidth + 10, y + 14);
@@ -154,55 +151,49 @@ const sectionHeader = (title) => {
       ["University", form.university],
     ].forEach(([label, val]) => drawRow(label, val));
 
-    // Image and QR positioning
+    // Image with border top-right
     const imageWidth = 100;
     const imageHeight = 120;
-    const qrSize = 80;
+    const imageX = pageWidth - margin - imageWidth;
+    const imageY = margin;
 
-    // Calculate image Y position - keep it near the top right but below title area
-    const imageY = margin + 50;
-
-    // Put image top right
     if (imageFile) {
       const reader = new FileReader();
       reader.onload = function (e) {
-        doc.addImage(
-          e.target.result,
-          "JPEG",
-          pageWidth - margin - imageWidth,
-          imageY,
-          imageWidth,
-          imageHeight
+        // Draw border around image
+        doc.setDrawColor(100);
+        doc.setLineWidth(1);
+        doc.rect(imageX - 5, imageY - 5, imageWidth + 10, imageHeight + 10);
+
+        // Add image
+        doc.addImage(e.target.result, "JPEG", imageX, imageY, imageWidth, imageHeight);
+
+        // Footer signature
+        doc.setFontSize(10);
+        doc.setTextColor("#666");
+        doc.setFont(undefined, "italic");
+        doc.text(
+          "Powered by Arafat-Tech",
+          pageWidth / 2,
+          pageHeight - margin / 2,
+          { align: "center" }
         );
 
-        // Put QR below image, with some margin
-        if (qrDataURL) {
-          doc.addImage(
-            qrDataURL,
-            "PNG",
-            pageWidth - margin - qrSize,
-            imageY + imageHeight + 10,
-            qrSize,
-            qrSize
-          );
-        }
-
-        doc.save("idendity_form.pdf");
+        doc.save("identity_form.pdf");
       };
       reader.readAsDataURL(imageFile);
     } else {
-      // No image, just add QR at top right
-      if (qrDataURL) {
-        doc.addImage(
-          qrDataURL,
-          "PNG",
-          pageWidth - margin - qrSize,
-          margin + 50,
-          qrSize,
-          qrSize
-        );
-      }
-      doc.save("college_admission_form.pdf");
+      doc.setFontSize(10);
+      doc.setTextColor("#666");
+      doc.setFont(undefined, "italic");
+      doc.text(
+        "Powered by Arafat-Tech",
+        pageWidth / 2,
+        pageHeight - margin / 2,
+        { align: "center" }
+      );
+
+      doc.save("identity_form.pdf");
     }
   };
 
@@ -210,29 +201,16 @@ const sectionHeader = (title) => {
     "p-3 border rounded-lg transition duration-200 hover:border-orange-400";
 
   return (
-    <div
-      className={`min-h-screen flex items-center justify-center p-4 ${
-        darkMode ? "bg-gray-900 text-white" : "bg-yellow-50 text-black"
-      }`}
-    >
+    <div className="min-h-screen flex items-center justify-center p-4 bg-yellow-50 text-black">
       <motion.div
         initial={{ opacity: 0, y: -30 }}
         animate={{ opacity: 1, y: 0 }}
-        className={`w-full mt-25 max-w-2xl shadow-xl rounded-xl p-8 border ${
-          darkMode ? "bg-gray-800 border-gray-700" : "bg-white"
-        }`}
+        className="w-full mt-25 max-w-2xl shadow-xl rounded-xl p-8 border bg-white"
       >
-        <div className="flex justify-between items-center mb-6 relative">
+        <div className="flex justify-center items-center mb-6 relative">
           <h2 className="text-xl font-bold text-orange-600 text-center w-full">
             Identity Form – Arafat-Tech Ltd
           </h2>
-          {/* <button
-            onClick={() => setDarkMode(!darkMode)}
-            className="absolute right-6 top-6 text-sm px-3 py-1 border rounded-lg"
-            aria-label="Toggle dark mode"
-          >
-            {darkMode ? "☀️ Light" : "🌙 Dark"}
-          </button> */}
         </div>
 
         {!preview ? (
